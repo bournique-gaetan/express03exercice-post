@@ -69,6 +69,23 @@ app.get('/', (req, res) => {
   res.send('Bienvenue sur la page d\'accueil');
 });
 
+app.delete('/api/users/:id', (req, res) => {
+  const userId = req.params.id;
+
+  User.findByIdAndDelete(userId)
+    .then(deletedUser => {
+      if (!deletedUser) {
+        return res.status(404).json({ message: 'Utilisateur non trouvé' });
+      }
+      res.json({ message: 'Utilisateur supprimé avec succès', user: deletedUser });
+    })
+    .catch(error => {
+      console.log('Erreur lors de la suppression de l\'utilisateur:', error);
+      res.status(500).json({ message: 'Une erreur est survenue lors de la suppression de l\'utilisateur' });
+    });
+});
+
+
 app.listen(3000, () => {
   console.log('Le serveur est en écoute sur le port 3000');
 });
