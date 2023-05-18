@@ -65,9 +65,30 @@ app.post('/api/users', (req, res) => {
     });
 });
 
-app.get('/', (req, res) => {
-  res.send('Bienvenue sur la page d\'accueil');
+app.get('/api/users', (req, res) => {
+  const language = req.query.language;
+  const city = req.query.city;
+
+  let query = {};
+
+  if (language) {
+    query.language = language;
+  }
+
+  if (city) {
+    query.city = city;
+  }
+
+  User.find(query)
+    .then(users => {
+      res.status(200).json(users);
+    })
+    .catch(error => {
+      console.log('Erreur lors de la récupération des utilisateurs:', error);
+      res.status(500).json({ message: 'Une erreur est survenue lors de la récupération des utilisateurs' });
+    });
 });
+
 
 app.delete('/api/users/:id', (req, res) => {
   const userId = req.params.id;
