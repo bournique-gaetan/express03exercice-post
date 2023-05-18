@@ -20,6 +20,32 @@ const User = mongoose.model('User', userSchema);
 
 app.use(bodyParser.json());
 
+app.put('/api/users/:id', (req, res) => {
+  const userId = req.params.id; 
+  const { name, email, password } = req.body; 
+
+  User.findById(userId)
+    .then(user => {
+      if (!user) {
+        return res.status(404).json({ message: 'Utilisateur non trouvé' });
+      }
+
+      user.name = name;
+      user.email = email;
+      user.password = password;
+
+      return user.save();
+    })
+    .then(updatedUser => {
+      res.json({ message: 'Utilisateur modifié avec succès', user: updatedUser });
+    })
+    .catch(error => {
+      console.log('Erreur lors de la modification de l\'utilisateur:', error);
+      res.status(500).json({ message: 'Une erreur est survenue lors de la modification de l\'utilisateur' });
+    });
+});
+
+
 app.post('/api/users', (req, res) => {
   const { name, email, password } = req.body;
 
@@ -37,6 +63,10 @@ app.post('/api/users', (req, res) => {
       console.log('Erreur lors de la création de l\'utilisateur:', error);
       res.status(500).json({ message: 'Une erreur est survenue lors de la création de l\'utilisateur' });
     });
+});
+
+app.get('/', (req, res) => {
+  res.send('Bienvenue sur la page d\'accueil');
 });
 
 app.listen(3000, () => {
